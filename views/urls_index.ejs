@@ -7,26 +7,12 @@
     </title>
   </head>
   <body>
-<!--     <table>
-      <tr>
-        <tr>urls</tr>
-        <tr>shortened urls</tr>
-      </tr>
-      <tr>
-        <th>"http://www.lighthouselabs.ca"</th>
-        <th>"b2xVn2"</th>
-      </tr>
-      <tr>
-        <th>"http://www.google.com"</th>
-        <th>"9sm5xK"</th>
-      </tr>
-      </table>-->
-      <table>
-      <% for (let shortones in urls) { %>
-        <tr><th><%= urls[shortones] %></th></tr>
-      <% } %>
-      </table>
-      <h1><%= urls['9sm5xK'] %></h1>
-      <a href="/urlshortener">URL shortener</a>
+    <h2 id="direction">All URL</h2>
+    <table>
+    <% for (let shortones in urls) { %>
+      <tr><th><%=shortones + ":" + urls[shortones] %></th></tr>
+    <% } %>
+    </table>
+    <a href="/urls/new">URL shortener</a>
   </body>
 </html>

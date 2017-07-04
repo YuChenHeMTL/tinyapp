@@ -14,6 +14,7 @@ function generateRandomString(){
   return finalString
 };
 
+app.use(express.static("views"))
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
