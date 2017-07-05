@@ -21,18 +21,19 @@ function generateRandomString(){
   return finalString
 };
 
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
 app.get("/", (req, res) => {
   res.render("urls_start");
 });
 
-app.post("/login", (req, res) => {
-  res.cookie("name", req.body.name);
-  urlDatabase["name"] = req.body.name;
-  res.redirect("/urls");
-})
+
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase};
+  let templateVars = { urls: urlDatabase, username:req.cookies.username};
   res.render("urls_index", templateVars);
 });
 
@@ -59,7 +60,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { allURL : urlDatabase, shortURL: req.params.id };
+  let templateVars = { allURL : urlDatabase, shortURL: req.params.id , username: req.cookies.username};
   res.render("urls_show", templateVars);
 });
 
