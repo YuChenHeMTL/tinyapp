@@ -7,10 +7,22 @@
     </title>
   </head>
   <body>
+      <div>
+      <ul class = "header">
+        <li><a href="/">Home</a></li>
+        <li><a href="/urls/new">New URL</a></li>
+        <li><a href="/urls">All url</a></li>
+        <li><a href="/u">Redirect</a></li>
+      </ul>
+    </div>
+    <h1 class="start">Tiny URL</h1>
+    <form method="POST" action="/urls/9sm5xK/delete">
+
+    </form>
     <h2 id="direction">All URL</h2>
     <table>
     <% for (let shortones in urls) { %>
-      <tr><th><%=shortones + ":" + urls[shortones] %></th></tr>
+      <tr><th><%=shortones%></th><th><a href=<%= urls[shortones] %> target="_blank"><%= urls[shortones] %></a></th></tr>
     <% } %>
     </table>
     <a href="/urls/new">URL shortener</a>
