@@ -5,13 +5,18 @@
         <li><a href="/urls">All url</a></li>
      </ul>
     </div>
-  <form action="/login" method="POST" style="text-align:left;">
-    <label for="username">Name :</label>
-      <input id="username" style="width:100px" placeholder="name" name="username">
-      <input type="submit" value="Submit">
-    <h3 style="display: inline;"><% if (username){%>
-      <%= username %>
-      <% } %>
-    </h3>
+    <% if (username === undefined||username==="") {%>
+      <form action="/login" method="POST" >
+        <label for="username">Name :</label>
+        <input id="username" style="width:100px;"name="username">
+        <input type="submit" value="Submit">
+      </form>
+    <h4>Hello, please enter your name</h4>
+    <%} else if (username) {%>
+    <h4 style="text-align: inline">Hello, <%= username %></h4>
+    <form method="POST" action="/logout">
+      <button type="submit" style="display: inline;">Logout</button>
+    </form>
+    <% } %>
   </form>
-    <h1 class="start", id="startingText">Tiny URL</h1>
+  <h1 class="start", id="startingText">Tiny URL</h1>

@@ -26,19 +26,26 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/logout", (req,res) => {
+  res.clearCookie("username");
+  res.redirect("/")
+})
+
 app.get("/", (req, res) => {
-  res.render("urls_start");
+  let templateVars = {username : req.cookies.username}
+  res.render("urls_start", templateVars);
 });
 
 
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username:req.cookies.username};
+  let templateVars = { urls: urlDatabase, username: req.cookies.username};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {username : req.cookies.username}
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {

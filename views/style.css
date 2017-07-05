@@ -79,3 +79,12 @@ button.btn.edit::before{
   font-family: fontAwesome;
   content:"\f044\00a0";
 }
+
+h4 {
+  text-align: center;
+}
+
+form {
+  text-align:center;
+  margin: 20px;
+}
