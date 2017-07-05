@@ -1,7 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+const PORT = process.env.PORT || 8080; // default port 8080
+var cookieParser = require("cookie-parser")
+
+app.use(express.static("views"))
+app.use(cookieParser())
+app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended : true}));
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -14,17 +21,18 @@ function generateRandomString(){
   return finalString
 };
 
-app.use(express.static("views"))
-app.set("view engine", "ejs");
-
-app.use(bodyParser.urlencoded({extended : true}));
-
 app.get("/", (req, res) => {
   res.render("urls_start");
 });
 
+app.post("/login", (req, res) => {
+  res.cookie("name", req.body.name);
+  urlDatabase["name"] = req.body.name;
+  res.redirect("/urls");
+})
+
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
 

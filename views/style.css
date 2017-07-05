@@ -74,3 +74,8 @@ button.btn.delete::before {
   font-family: fontAwesome;
   content: "\f014\00a0";
 }
+
+button.btn.edit::before{
+  font-family: fontAwesome;
+  content:"\f044\00a0";
+}
