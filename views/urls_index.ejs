@@ -7,24 +7,31 @@
     </title>
   </head>
   <body>
-      <div>
-      <ul class = "header">
-        <li><a href="/">Home</a></li>
-        <li><a href="/urls/new">New URL</a></li>
-        <li><a href="/urls">All url</a></li>
-        <li><a href="/u">Redirect</a></li>
-      </ul>
-    </div>
-    <h1 class="start">Tiny URL</h1>
-    <form method="POST" action="/urls/9sm5xK/delete">
+    <%- include ./partials/_navbar %>
 
-    </form>
-    <h2 id="direction">All URL</h2>
+    <h2 id="startingText">All URL</h2>
+    <h2 style="text-align:center;">Want to add a URL ? <a href="/urls/new" class="url">URL shortener</a></h2>
     <table>
     <% for (let shortones in urls) { %>
-      <tr><th><%=shortones%></th><th><a href=<%= urls[shortones] %> target="_blank"><%= urls[shortones] %></a></th></tr>
+        <tr>
+          <th>
+            <a href=<%= urls[shortones] %> target="_blank" class="url">http://localhost:8080/<%= shortones %></a>
+          </th>
+          <th>
+            (<%= urls[shortones]%>)
+          </th>
+          <form method="GET" action=/urls/<%= shortones %>>
+          <th>
+            <button type="submit" class="btn delete" >edit</button>
+          </th>
+          </form>
+          <form method="POST" action=/<%= shortones %>/delete>
+            <th>
+              <button type="submit" class="btn delete" >delete</button>
+            </th>
+          </form>
+        </tr>
     <% } %>
     </table>
-    <a href="/urls/new">URL shortener</a>
   </body>
 </html>

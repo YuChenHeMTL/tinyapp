@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html lang = "en">
   <head>
     <%- include ./partials/_header %>
   </head>
   <body>
-
-      <%= allURL[shortURL] %>
-
+      <%- include ./partials/_navbar %>
+    <form action=/urls/<%= shortURL %> method="POST" style="text-align: center;">
+     <h2>ShortURL : <%= shortURL %></h2>
+      <input id="longURL" type="text" name="longURL" value=<%= allURL[shortURL] %> all style="width: 300px">
+      <input type="submit" value="Edit">
+    </form>
   </body>
 </html>
