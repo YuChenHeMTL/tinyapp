@@ -80,6 +80,11 @@ button.btn.edit::before{
   content:"\f044\00a0";
 }
 
+button.btn.accept::before{
+  font-family:fontAwesome;
+  content:"\f00c\00a0";
+}
+
 h4 {
   text-align: center;
 }

@@ -5,9 +5,10 @@
   </head>
   <body>
     <%- include ./partials/_navbar %>
-    <form action="/urls" method="POST" style="margin:150px; margin-top: 100px; text-align: center;">
+    <h1 style="text-align: center;"> URL Shortener</h1>
+    <form action="/urls" method="POST" style="margin:150px; margin-top: 50px; text-align: center;">
       <label for="longURL">Enter a URL:</label>
-      <input id="longURL" type="text" name="longURL" placeholder="http://www.example.com" style="width: 300px">
+      <input id="longURL" type="text" name="longURL" value="http://www." style="width: 300px">
       <input type="submit" value="Submit">
     </form>
   </body>
