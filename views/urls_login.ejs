@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <%- include ./partials/_head %>
+  </head>
+  <body>
+    <%- include ./partials/_navbar %>
+    <h1 style="text-align: center;"> Login</h1>
+    <form action="/login" method="POST" style="margin:150px; margin-top: 50px; text-align: center;">
+      <label for="email">   Email :</label>
+      <input id="email" type="email" name="email" style="width: 300px;"><br/>
+      <label for="Password :">Password :</label>
+      <input id="password" type="password" name="password" style="width: 300px;"><br/>
+      <button class="btn submit" type="submit">Submit</button>
+    </form>
+  </body>
+</html>

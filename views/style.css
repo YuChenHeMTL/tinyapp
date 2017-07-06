@@ -1,6 +1,11 @@
 body {
-  background-color: lightblue;
+  font-family: Tahoma;
+  background-image: url("https://s-media-cache-ak0.pinimg.com/originals/f9/50/8c/f9508cde9276bccbac3b51ef27f0d798.gif");
+  background-size: 100%:
+  /*background-image: url("https://68.media.tumblr.com/040d77e95e37f05fbc14b0b8ae3d3177/tumblr_opsismTLqh1vghf22o1_400.gif");*/
+  /*background-image: url("https://s-media-cache-ak0.pinimg.com/originals/28/66/10/2866109a7e9dcf3077de47777b1e3a60.gif");*/
   display: block;
+  color : white;
 }
 
 .start{
@@ -12,7 +17,6 @@ body {
 
 #startingText {
   text-align: center;
-  font-family: sans-serif;
 
 }
 
@@ -21,7 +25,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333;
+    background-color: #2cd0f9;
 }
 
 li {
@@ -37,30 +41,31 @@ li a {
 }
 
 .url:visited{
-  color: blue;
+  color: #2cd0f9;
 }
 
 li a:visited{
   color: white;
   text-decoration: none;
+
 }
 
 li a:hover{
-  background-color: gray;
+  background-color: #0ca7ce;
 }
 
 a {
   text-decoration: none;
+  color: #2cd0f9;
 }
 
 #direction a{
   text-decoration: none;
-  color: gray;
 }
 
 #direction {
   height: 50px;
-  color: black;
+  color: white;
   margin: 0;
   text-align: center;
 }
@@ -80,10 +85,21 @@ button.btn.edit::before{
   content:"\f044\00a0";
 }
 
-button.btn.accept::before{
+button.btn.submit::before{
   font-family:fontAwesome;
-  content:"\f00c\00a0";
+  content:"\f1d8\00a0";
 }
+
+button.btn.login::before {
+  font-family: fontAwesome;
+  content: "\f090\00a0";
+}
+
+button.btn.register::before {
+  font-family: fontAwesome;
+  content: "\f007\00a0";
+}
+
 
 h4 {
   text-align: center;
@@ -93,3 +109,4 @@ form {
   text-align:center;
   margin: 20px;
 }
+
