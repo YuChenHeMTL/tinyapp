@@ -6,7 +6,7 @@
   <body>
     <%- include ./partials/_navbar %>
     <h1 style="text-align: center;"> URL Shortener</h1>
-    <form action="/urls" method="POST" style="margin:150px; margin-top: 50px; text-align: center;">
+    <form action="/urls/new" method="POST" style="margin:150px; margin-top: 50px; text-align: center;">
       <label for="longURL">Enter a URL:</label>
       <input id="longURL" type="text" name="longURL" value="http://www." style="width: 300px">
       <button class="btn submit" type="submit">Submit</button>

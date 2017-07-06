@@ -11,13 +11,13 @@
     <h2 id="startingText">All URL</h2>
     <h2 style="text-align:center;">Want to add a URL ? <a href="/urls/new" class="url">URL shortener</a></h2>
     <table>
-    <% for (let shortones in urls) { %>
+    <% for (let shortones in users[user_id]["url"]) { %>
         <tr>
           <th>
-            <a href=<%= urls[shortones] %> target="_blank" class="url"><%= shortones %></a>
+            <a href=<%= users[user_id]["url"][shortones] %> target="_blank" class="url"><%= shortones %></a>
           </th>
           <th>
-            (<%= urls[shortones]%>)
+            (<%= users[user_id]["url"][shortones]%>)
           </th>
           <form method="GET" action=/urls/<%= shortones %>>
           <th>

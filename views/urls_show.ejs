@@ -8,7 +8,7 @@
       <%- include ./partials/_navbar %>
     <form action=/urls/<%= shortURL %> method="POST" style="text-align: center;">
      <h2>ShortURL : <%= shortURL %></h2>
-      <input id="longURL" type="text" name="longURL" value=<%= allURL[shortURL] %> all style="width: 300px">
+      <input id="longURL" type="text" name="longURL" value=<%= users[user_id]["url"][shortURL] %> all style="width: 300px">
       <button class="btn submit" type="submit">Submit</button>
     </form>
   </body>

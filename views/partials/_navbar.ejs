@@ -14,7 +14,7 @@
     <%if (user_id === undefined||user_id ==="") {%>
     <h4>Hello, please login to access to the URL shortener</h4>
     <% } else { %>
-    <h2 style="text-align: center;">Welcome, <%= user_id %> !</h2>
+    <h2 style="text-align: center;">Welcome, <%= users[user_id].username %> !</h2>
     <% } %>
   <img src="http://is5.mzstatic.com/image/thumb/Purple60/v4/de/02/a0/de02a0e3-d369-d861-9703-c4eddf25c121/source/1200x630bb.jpg" style="display:block; margin: 0 auto; height:100px; width: 95px;">
   <!-- <h1 class="start", id="startingText">Tiny URL</h1> -->

@@ -10,21 +10,22 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase = {}
 
 const users = {
   "userRandomID": {
     id: "userRandomID",
+    username: "caonima",
     email: "qwer@w",
-    password: "qwer"
+    password: "qwer",
+    url:{"qwer12":"qwerqwer"}
   },
  "user2RandomID": {
     id: "user2RandomID",
+    username: "lmao gg ez",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "dishwasher-funk",
+    url :{}
   }
 }
 
@@ -46,9 +47,9 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  // if (req.cookies.login === "failed" ){
-    // res.clearCookie("login")
-  // }
+  if (req.cookies.login === "failed" ){
+    res.clearCookie("login")
+  }
   let templateVars = {user_id: req.cookies.user_id, login:req.cookies.login, users: users}
   res.render("urls_login", templateVars);
 })
@@ -62,37 +63,43 @@ app.post("/login", (req, res) => {
       return ;
     }
   }
-        res.cookie("login", "failed");
-      res.redirect("/login")
+  res.cookie("login", "failed");
+  res.redirect("/login")
 });
 
 app.get("/urls", (req, res) => {
   if (req.cookies.login === "failed" || !req.cookies.login) {
-    // res.send("hello")
     res.redirect("/login")
   } else {
-  let templateVars = { urls: urlDatabase, user_id: req.cookies.user_id, users:users};
+  let templateVars = {user_id: req.cookies.user_id, users:users};
   res.render("urls_index", templateVars);
   }
 });
 
 app.get("/register", (req, res) => {
+  if (req.cookies.username === "existing"){
+    res.clearCookie("username")
+  }
+  if (req.cookies.email === "existing"){
+    res.clearCookie("email")
+  }
   let templateVars = {user_id: req.cookies.user_id, users:users}
   res.render("urls_register", templateVars)
 })
 
 app.post("/register", (req, res) => {
+
   if (req.body.email==="" || req.body.password===''){
     console.log(404)
-    res.redirect(404);
+    res.redirect(403, "/register");
   }
   for (var user in users){
     if (req.body.email === users[user].email){
-      res.redirect(400);
+      res.redirect(403, "/register");
     }
   }
    let user_id = generateRandomString();
-   users[user_id] = {id: user_id, email: req.body.email, password: req.body.password}
+   users[user_id] = {id: user_id, username : req.body.username, email: req.body.email, password: req.body.password, url: {}}
   res.redirect("/login")
 })
 
@@ -105,19 +112,34 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls/new", (req, res) => {
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
   let randomString = generateRandomString();
-  urlDatabase[randomString] = req.body.longURL;
+  users[req.cookies.user_id]["url"][randomString] = req.body.longURL
+  urlDatabase[randomString] = req.body.longURL
   res.redirect("/urls/" + randomString);
+  }
 });
 
 app.post("/:someid/delete", (req, res) => {
-  let shorturl = req.params.someid;
-  delete urlDatabase[shorturl]
-  res.redirect("/urls")
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
+    if (users[req.cookies.user_id]["url"].hasOwnProperty(req.params.somekey) === true){
+      res.redirect(403, "/urls")
+      console.log(users)
+    } else {
+      let shorturl = req.params.someid;
+      delete users[req.cookies.user_id]["url"][shorturl]
+      delete urlDatabase[shorturl]
+      res.redirect("/urls")
+    }
+  }
 })
 
-app.get("/u/:shortURL", (req, res) => {
+app.get("/:shortURL", (req, res) => {
   if (req.cookies.login === "failed" || !req.cookies.login) {
     res.redirect("/login")
   } else {
@@ -130,18 +152,27 @@ app.get("/urls/:id", (req, res) => {
   if (req.cookies.login === "failed" || !req.cookies.login) {
     res.redirect("/login")
   } else {
-  let templateVars = { allURL : urlDatabase, shortURL: req.params.id , user_id: req.cookies.user_id, users:users};
+  let templateVars = {shortURL: req.params.id , user_id: req.cookies.user_id, users:users};
   res.render("urls_show", templateVars);
   }
 });
 
 app.post("/urls/:somekey", (req, res) => {
-    urlDatabase[req.params.somekey] = req.body["longURL"]
-  res.redirect("/urls")
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
+    if (users[req.cookies.user_id]["url"].hasOwnProperty(req.params.somekey) === false){
+      res.redirect(403, "/")
+    } else {
+      users[req.cookies.user_id]["url"][req.params.somekey] = req.body["longURL"]
+      urlDatabase[req.params.somekey] = req.body["longURL"]
+      res.redirect("/urls")
+    }
+  }
 })
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.json(users);
 });
 
 
