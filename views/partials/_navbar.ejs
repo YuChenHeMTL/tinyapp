@@ -2,27 +2,19 @@
         <ul class = "header">
         <li><a href="/">Home</a></li>
         <li><a href="/urls/new">New URL</a></li>
-        <li><a href="/urls">All url</a></li>
+        <li><a href="/urls">Your urls</a></li>
         <li style="float: right"><a href="/register">Register</a></li>
+        <% if (user_id === undefined||user_id ==="") {%>
         <li style="float: right"><a href="/login">Login</a></li>
+        <% } else { %>
+        <li style="float: right"><a href="/logout">Logout</a></li>
+        <% } %>
      </ul>
     </div>
-    <% if (user_id === undefined||user_id ==="") {%>
-    <div style="display: inline">
-      <form action="/login" method="GET" >
-        <button type="submit" class="btn login">Login</button>
-      </form>
-      <form action="/register" method="GET">
-        <button type="submit" class="btn register">Register</button>
-      </form>
-    </div>
+    <%if (user_id === undefined||user_id ==="") {%>
     <h4>Hello, please login to access to the URL shortener</h4>
-    <%} else if (user_id) {%>
-    <h4 style="text-align: inline">Welcome !</h4>
-    <form method="POST" action="/logout">
-      <button type="submit" style="display: inline;">Logout</button>
-    </form>
+    <% } else { %>
+    <h2 style="text-align: center;">Welcome, <%= user_id %> !</h2>
     <% } %>
-  </form>
-  <img src="http://is5.mzstatic.com/image/thumb/Purple60/v4/de/02/a0/de02a0e3-d369-d861-9703-c4eddf25c121/source/1200x630bb.jpg" style="display:block; margin: 0 auto; height:100px; width: 100px;">
+  <img src="http://is5.mzstatic.com/image/thumb/Purple60/v4/de/02/a0/de02a0e3-d369-d861-9703-c4eddf25c121/source/1200x630bb.jpg" style="display:block; margin: 0 auto; height:100px; width: 95px;">
   <!-- <h1 class="start", id="startingText">Tiny URL</h1> -->

@@ -6,6 +6,9 @@
   <body>
     <%- include ./partials/_navbar %>
     <h1 style="text-align: center;"> Login</h1>
+    <% if (login === "failed"){ %>
+    <h2 style="text-align: center">Please try again</h2>
+    <% } %>
     <form action="/login" method="POST" style="margin:150px; margin-top: 50px; text-align: center;">
       <label for="email">   Email :</label>
       <input id="email" type="email" name="email" style="width: 300px;"><br/>

@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
-var cookieParser = require("cookie-parser")
+const cookieParser = require("cookie-parser")
 
 app.use(express.static("views"))
 app.use(cookieParser())
@@ -18,8 +18,8 @@ var urlDatabase = {
 const users = {
   "userRandomID": {
     id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    email: "qwer@w",
+    password: "qwer"
   },
  "user2RandomID": {
     id: "user2RandomID",
@@ -34,33 +34,50 @@ function generateRandomString(){
   return finalString
 };
 
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
-});
-
-app.post("/logout", (req,res) => {
+app.get("/logout", (req,res) => {
   res.clearCookie("user_id");
+  res.clearCookie("login")
   res.redirect("/")
 })
 
 app.get("/", (req, res) => {
-  let templateVars = {user_id : req.cookies.user_id}
+  let templateVars = {user_id : req.cookies.user_id, users: users}
   res.render("urls_start", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  let templateVars = {user_id: req.cookies.user_id}
+  // if (req.cookies.login === "failed" ){
+    // res.clearCookie("login")
+  // }
+  let templateVars = {user_id: req.cookies.user_id, login:req.cookies.login, users: users}
   res.render("urls_login", templateVars);
 })
 
+app.post("/login", (req, res) => {
+  for (someone in users){
+    if (req.body.email === users[someone].email && req.body.password === users[someone].password){
+      res.cookie("user_id", users[someone].id);
+      res.cookie("login", "success");
+      res.redirect("/urls");
+      return ;
+    }
+  }
+        res.cookie("login", "failed");
+      res.redirect("/login")
+});
+
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, user_id: req.cookies.user_id};
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    // res.send("hello")
+    res.redirect("/login")
+  } else {
+  let templateVars = { urls: urlDatabase, user_id: req.cookies.user_id, users:users};
   res.render("urls_index", templateVars);
+  }
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {user_id: req.cookies.user_id}
+  let templateVars = {user_id: req.cookies.user_id, users:users}
   res.render("urls_register", templateVars)
 })
 
@@ -71,20 +88,21 @@ app.post("/register", (req, res) => {
   }
   for (var user in users){
     if (req.body.email === users[user].email){
-
       res.redirect(400);
     }
   }
-   var user_id = generateRandomString();
-   res.cookie("user_id", user_id);
+   let user_id = generateRandomString();
    users[user_id] = {id: user_id, email: req.body.email, password: req.body.password}
-   console.log(users)
-  res.redirect("/")
+  res.redirect("/login")
 })
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {user_id : req.cookies.user_id}
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
+  let templateVars = {user_id : req.cookies.user_id, users:users};
   res.render("urls_new", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
@@ -100,13 +118,21 @@ app.post("/:someid/delete", (req, res) => {
 })
 
 app.get("/u/:shortURL", (req, res) => {
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { allURL : urlDatabase, shortURL: req.params.id , user_id: req.cookies.user_id};
+  if (req.cookies.login === "failed" || !req.cookies.login) {
+    res.redirect("/login")
+  } else {
+  let templateVars = { allURL : urlDatabase, shortURL: req.params.id , user_id: req.cookies.user_id, users:users};
   res.render("urls_show", templateVars);
+  }
 });
 
 app.post("/urls/:somekey", (req, res) => {
