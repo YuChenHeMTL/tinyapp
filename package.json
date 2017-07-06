@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/YuChenHeMTL/tinyapp#readme",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.6",

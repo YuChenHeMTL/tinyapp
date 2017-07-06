@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 var app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const cookieParser = require("cookie-parser")
+const bcrypt = require("bcrypt")
+
 
 app.use(express.static("views"))
 app.use(cookieParser())
@@ -56,7 +58,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   for (someone in users){
-    if (req.body.email === users[someone].email && req.body.password === users[someone].password){
+    if (req.body.email === users[someone].email && bcrypt.compareSync(req.body.password, users[someone].password)){
       res.cookie("user_id", users[someone].id);
       res.cookie("login", "success");
       res.redirect("/urls");
@@ -88,7 +90,6 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-
   if (req.body.email==="" || req.body.password===''){
     console.log(404)
     res.redirect(403, "/register");
@@ -99,7 +100,8 @@ app.post("/register", (req, res) => {
     }
   }
    let user_id = generateRandomString();
-   users[user_id] = {id: user_id, username : req.body.username, email: req.body.email, password: req.body.password, url: {}}
+   users[user_id] = {id: user_id, username : req.body.username, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10), url: {}}
+   console.log(users[user_id])
   res.redirect("/login")
 })
 
