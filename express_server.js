@@ -24,11 +24,20 @@ const users = {};
 //This is the main database to store all the information about the users
 //using this database, users can only see their own urls
 //This also avoids unauthorized deletion or modification of urls
+const url_stats = {}
+
+//the object where all url stats is stored
 
 function generateRandomString(){
   var finalString = "";
   finalString = Math.random().toString(36).substr(2, 6);
   return finalString;
+}
+
+function getDate (){
+  let currentDate = new Date();
+  let utcDate = currentDate.toUTCString();
+  return currentDate;
 }
 //Generate a random 6 letter or number string
 //generates user id and short urls
@@ -131,6 +140,9 @@ app.post("/urls/new", (req, res) => {
       res.redirect("/error");
     } else {
       let randomString = generateRandomString();
+      url_stats[randomString] = {};
+      url_stats[randomString].userCounter = 0;
+      url_stats[randomString].uniqueUser = [];
       users[req.session.user_id]["url"][randomString] = req.body.longURL;
       urlDatabase[randomString] = req.body.longURL;
       res.redirect("/urls");
@@ -195,9 +207,30 @@ app.post("/urls/:someid/delete", (req, res) => {
 //if user doesn't own the short url, redirect to error page
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  let miniURL = req.params.shortURL;
+  url_stats[miniURL].userCounter += 1 ;
+  if (req.session.user_id){
+    for (let i = 0; i < url_stats[miniURL].uniqueUser.length; i++){
+      if (url_stats[miniURL].uniqueUser[i].id === req.session.user_id ){
+        url_stats[miniURL].uniqueUser[i].time = getDate()
+        return;
+      }
+    }
+    url_stats[miniURL].uniqueUser.push({id : req.session.user_id, time : getDate()});
+    let longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  }
 });
+
+app.get("/urls/:short/stats", (req, res) => {
+  if (!req.session.user_id) {
+    res.redirect("/error");
+  } else {
+    let miniURL = req.params.short;
+    let templateVars = {user_id: req.session.user_id, users: users, url_stats: url_stats, miniURL: miniURL};
+    res.render("urls_stats", templateVars)
+  }
+})
 
 //redirect to the corresponding long url page
 
