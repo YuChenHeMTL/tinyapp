@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang = "en">
+  <head>
+  <%- include ./partials/_head %>
+  </head>
+  <body>
+    <%- include ./partials/_navbar %>
+
+    <h1 id="startingText">URL stats</>
+    <% if (url_stats[miniURL]){ %>
+    <h2 style="text-align: center;">Total visitor counter : <%= url_stats[miniURL].userCounter %></h2>
+    <table>
+    <% for (let i = 0; i < url_stats[miniURL].uniqueUser.length; i++) { %>
+      <tr>
+        <h4>ID : <%= url_stats[miniURL].uniqueUser[i].id %></h4>
+      </tr>
+      <tr>
+        <h4> Time : <%= String(url_stats[miniURL].uniqueUser[i].time).slice(0, 28) %></h4>
+      </tr>
+      <% } %>
+    </table>
+    <% } %>
+  </body>
+</html>
