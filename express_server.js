@@ -2,12 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
-const cookieParser = require("cookie-parser")
+const cookieSession = require("cookie-session")
 const bcrypt = require("bcrypt")
 
 
 app.use(express.static("views"))
-app.use(cookieParser())
+app.use(cookieSession({
+  name:"session",
+  keys:["key1"]
+}))
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
@@ -19,13 +22,13 @@ const users = {
     id: "userRandomID",
     username: "caonima",
     email: "qwer@w",
-    password: "qwer",
+    password: bcrypt.hashSync("qwer", 10),
     url:{"qwer12":"qwerqwer"}
   },
  "user2RandomID": {
     id: "user2RandomID",
     username: "lmao gg ez",
-    email: "user2@example.com",
+    email: bcrypt.hashSync("user2@example.com", 10),
     password: "dishwasher-funk",
     url :{}
   }
@@ -38,60 +41,50 @@ function generateRandomString(){
 };
 
 app.get("/logout", (req,res) => {
-  res.clearCookie("user_id");
-  res.clearCookie("login")
+  req.session = null;
   res.redirect("/")
 })
 
 app.get("/", (req, res) => {
-  let templateVars = {user_id : req.cookies.user_id, users: users}
+  let templateVars = {user_id : req.session.user_id, users: users}
   res.render("urls_start", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  if (req.cookies.login === "failed" ){
-    res.clearCookie("login")
-  }
-  let templateVars = {user_id: req.cookies.user_id, login:req.cookies.login, users: users}
+  let templateVars = {user_id: req.session.user_id, login:req.session.login, users: users}
   res.render("urls_login", templateVars);
 })
 
 app.post("/login", (req, res) => {
   for (someone in users){
     if (req.body.email === users[someone].email && bcrypt.compareSync(req.body.password, users[someone].password)){
-      res.cookie("user_id", users[someone].id);
-      res.cookie("login", "success");
+      req.session.user_id = users[someone].id;
+      console.log(req.session.user_id);
+      req.session.login = true;
       res.redirect("/urls");
       return ;
     }
   }
-  res.cookie("login", "failed");
+  req.session.login = true;
   res.redirect("/login")
 });
 
 app.get("/urls", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
   } else {
-  let templateVars = {user_id: req.cookies.user_id, users:users};
+  let templateVars = {user_id: req.session.user_id, users:users};
   res.render("urls_index", templateVars);
   }
 });
 
 app.get("/register", (req, res) => {
-  if (req.cookies.username === "existing"){
-    res.clearCookie("username")
-  }
-  if (req.cookies.email === "existing"){
-    res.clearCookie("email")
-  }
-  let templateVars = {user_id: req.cookies.user_id, users:users}
+  let templateVars = {user_id: req.session.user_id, users:users}
   res.render("urls_register", templateVars)
 })
 
 app.post("/register", (req, res) => {
   if (req.body.email==="" || req.body.password===''){
-    console.log(404)
     res.redirect(403, "/register");
   }
   for (var user in users){
@@ -101,40 +94,53 @@ app.post("/register", (req, res) => {
   }
    let user_id = generateRandomString();
    users[user_id] = {id: user_id, username : req.body.username, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10), url: {}}
-   console.log(users[user_id])
-  res.redirect("/login")
+   res.redirect("/login")
 })
 
 app.get("/urls/new", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
   } else {
-  let templateVars = {user_id : req.cookies.user_id, users:users};
+  let templateVars = {user_id : req.session.user_id, users:users};
   res.render("urls_new", templateVars);
   }
 });
 
 app.post("/urls/new", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
   } else {
-  let randomString = generateRandomString();
-  users[req.cookies.user_id]["url"][randomString] = req.body.longURL
-  urlDatabase[randomString] = req.body.longURL
-  res.redirect("/urls/" + randomString);
+    if (req.body.longURL.substr(0, 4) !== "http"){
+      res.redirect(403, "/urls/new")
+    } else {
+      let randomString = generateRandomString();
+      users[req.session.user_id]["url"][randomString] = req.body.longURL
+      urlDatabase[randomString] = req.body.longURL
+      res.redirect("/urls");
+    }
   }
 });
 
-app.post("/:someid/delete", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
+app.get("/urls/:id", (req, res) => {
+  req.session.wrongURL = false;
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
   } else {
-    if (users[req.cookies.user_id]["url"].hasOwnProperty(req.params.somekey) === true){
+  let templateVars = {shortURL: req.params.id , user_id: req.session.user_id, users:users};
+  res.render("urls_show", templateVars);
+  }
+});
+
+app.get("/:someid/delete", (req, res) => {
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
+  } else {
+    if (users[req.session.user_id]["url"].hasOwnProperty(req.params.somekey) === true){
       res.redirect(403, "/urls")
       console.log(users)
     } else {
       let shorturl = req.params.someid;
-      delete users[req.cookies.user_id]["url"][shorturl]
+      delete users[req.session.user_id]["url"][shorturl]
       delete urlDatabase[shorturl]
       res.redirect("/urls")
     }
@@ -142,31 +148,20 @@ app.post("/:someid/delete", (req, res) => {
 })
 
 app.get("/:shortURL", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
-  } else {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
-  }
 });
 
-app.get("/urls/:id", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
-  } else {
-  let templateVars = {shortURL: req.params.id , user_id: req.cookies.user_id, users:users};
-  res.render("urls_show", templateVars);
-  }
-});
+
 
 app.post("/urls/:somekey", (req, res) => {
-  if (req.cookies.login === "failed" || !req.cookies.login) {
-    res.redirect("/login")
+  if (!req.session.user_id) {
+    res.redirect(403, "/login")
   } else {
-    if (users[req.cookies.user_id]["url"].hasOwnProperty(req.params.somekey) === false){
+    if (users[req.session.user_id]["url"].hasOwnProperty(req.params.somekey) === false){
       res.redirect(403, "/")
     } else {
-      users[req.cookies.user_id]["url"][req.params.somekey] = req.body["longURL"]
+      users[req.session.user_id]["url"][req.params.somekey] = req.body["longURL"]
       urlDatabase[req.params.somekey] = req.body["longURL"]
       res.redirect("/urls")
     }

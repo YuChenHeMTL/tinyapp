@@ -6,7 +6,7 @@
   <body>
     <%- include ./partials/_navbar %>
     <h1 style="text-align: center;"> Login</h1>
-    <% if (login === "failed"){ %>
+    <% if (login == true){ %>
     <h2 style="text-align: center">Please try again</h2>
     <% } %>
     <table>
