@@ -2,175 +2,204 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
-const cookieSession = require("cookie-session")
-const bcrypt = require("bcrypt")
+const cookieSession = require("cookie-session");
+const bcrypt = require("bcrypt");
 
 
-app.use(express.static("views"))
+app.use(express.static("views"));
 app.use(cookieSession({
   name:"session",
   keys:["key1"]
-}))
+}));
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended : true}));
 
-const urlDatabase = {}
+const urlDatabase = {};
+//This is an extra database to store all the shortened urls and their links
+//The point of this database is to be able to access the short urls without having to login
 
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    username: "caonima",
-    email: "qwer@w",
-    password: bcrypt.hashSync("qwer", 10),
-    url:{"qwer12":"qwerqwer"}
-  },
- "user2RandomID": {
-    id: "user2RandomID",
-    username: "lmao gg ez",
-    email: bcrypt.hashSync("user2@example.com", 10),
-    password: "dishwasher-funk",
-    url :{}
-  }
-}
+const users = {};
+
+//This is the main database to store all the information about the users
+//using this database, users can only see their own urls
+//This also avoids unauthorized deletion or modification of urls
 
 function generateRandomString(){
-  var finalString = ""
+  var finalString = "";
   finalString = Math.random().toString(36).substr(2, 6);
-  return finalString
-};
+  return finalString;
+}
+//Generate a random 6 letter or number string
+//generates user id and short urls
 
-app.get("/logout", (req,res) => {
-  req.session = null;
-  res.redirect("/")
-})
+
+app.get("/error", (req, res) => {
+  let templateVars = {user_id : req.session.user_id, users: users};
+  res.render("urls_error", templateVars);
+});
+//The error page modified depending on the error
 
 app.get("/", (req, res) => {
-  let templateVars = {user_id : req.session.user_id, users: users}
+  let templateVars = {user_id : req.session.user_id, users: users};
   res.render("urls_start", templateVars);
 });
+//the main page
+
 
 app.get("/login", (req, res) => {
-  let templateVars = {user_id: req.session.user_id, login:req.session.login, users: users}
+  let templateVars = {user_id: req.session.user_id, login:req.session.login, users: users};
   res.render("urls_login", templateVars);
-})
+});
+//The login page
+//If the user hasnt logged in, he cant use any service of the page
 
 app.post("/login", (req, res) => {
-  for (someone in users){
+  for (let someone in users){
     if (req.body.email === users[someone].email && bcrypt.compareSync(req.body.password, users[someone].password)){
       req.session.user_id = users[someone].id;
-      console.log(req.session.user_id);
       req.session.login = true;
       res.redirect("/urls");
       return ;
     }
   }
   req.session.login = true;
-  res.redirect("/login")
+  res.redirect("/login");
 });
+//the POST option of the login page
+//The "login = true" is for the display of the "try again" message in urls_login
+
+app.get("/logout", (req,res) => {
+  req.session = null;
+  res.redirect("/");
+});
+//log out the current user and clear the session
 
 app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect(403, "/login")
+    res.redirect("/error");
   } else {
   let templateVars = {user_id: req.session.user_id, users:users};
   res.render("urls_index", templateVars);
   }
 });
+//The index page where all urls of the user is displayed
 
 app.get("/register", (req, res) => {
-  let templateVars = {user_id: req.session.user_id, users:users}
-  res.render("urls_register", templateVars)
-})
+  let templateVars = {user_id: req.session.user_id, users:users};
+  res.render("urls_register", templateVars);
+});
 
 app.post("/register", (req, res) => {
   if (req.body.email==="" || req.body.password===''){
-    res.redirect(403, "/register");
-  }
-  for (var user in users){
-    if (req.body.email === users[user].email){
-      res.redirect(403, "/register");
+    res.redirect("/error");
+  } else {
+    for (var user in users){
+      if (req.body.email === users[user].email){
+        res.redirect("/error");
+        return;
+      }
     }
-  }
-   let user_id = generateRandomString();
-   users[user_id] = {id: user_id, username : req.body.username, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10), url: {}}
-   res.redirect("/login")
-})
+     let user_id = generateRandomString();
+     users[user_id] = {id: user_id,  email: req.body.email, password: bcrypt.hashSync(req.body.password, 10), url: {}};
+     res.redirect("/login");
+   }
+});
+
+// the page where the user can register
+// if the email or the password is blank, return to error page
+// if the email is another user's, return to error page
+// if registration succesful, give a random 6 digit string to the user_id
 
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect(403, "/login")
+    res.redirect("/error");
   } else {
   let templateVars = {user_id : req.session.user_id, users:users};
   res.render("urls_new", templateVars);
   }
 });
 
+//access to the page to create a new short url
+//if user is not logged in, redirect to error page
+
 app.post("/urls/new", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect(403, "/login")
+    res.redirect("/error");
   } else {
     if (req.body.longURL.substr(0, 4) !== "http"){
-      res.redirect(403, "/urls/new")
+      res.redirect("/error");
     } else {
       let randomString = generateRandomString();
-      users[req.session.user_id]["url"][randomString] = req.body.longURL
-      urlDatabase[randomString] = req.body.longURL
+      users[req.session.user_id]["url"][randomString] = req.body.longURL;
+      urlDatabase[randomString] = req.body.longURL;
       res.redirect("/urls");
     }
   }
 });
 
+//creation of a new url
+//if user is not logged in, redirect to error page
+//if the link doesnt start with http, redirect to error page
+
+
 app.get("/urls/:id", (req, res) => {
   req.session.wrongURL = false;
   if (!req.session.user_id) {
-    res.redirect(403, "/login")
+    res.redirect("/error");
   } else {
   let templateVars = {shortURL: req.params.id , user_id: req.session.user_id, users:users};
   res.render("urls_show", templateVars);
   }
 });
-
-app.get("/:someid/delete", (req, res) => {
-  if (!req.session.user_id) {
-    res.redirect(403, "/login")
-  } else {
-    if (users[req.session.user_id]["url"].hasOwnProperty(req.params.somekey) === true){
-      res.redirect(403, "/urls")
-      console.log(users)
-    } else {
-      let shorturl = req.params.someid;
-      delete users[req.session.user_id]["url"][shorturl]
-      delete urlDatabase[shorturl]
-      res.redirect("/urls")
-    }
-  }
-})
-
-app.get("/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
-
+//go to the page to edit the current url
+//if user is not logged in, redirect to error page
 
 
 app.post("/urls/:somekey", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect(403, "/login")
+    res.redirect("/error");
   } else {
-    if (users[req.session.user_id]["url"].hasOwnProperty(req.params.somekey) === false){
-      res.redirect(403, "/")
+    if (users[req.session.user_id].url.hasOwnProperty(req.params.somekey) === false){
+      res.redirect("/error");
     } else {
-      users[req.session.user_id]["url"][req.params.somekey] = req.body["longURL"]
-      urlDatabase[req.params.somekey] = req.body["longURL"]
-      res.redirect("/urls")
+      users[req.session.user_id].url[req.params.somekey] = req.body.longURL;
+      urlDatabase[req.params.somekey] = req.body.longURL;
+      res.redirect("/urls");
     }
   }
-})
-
-app.get("/urls.json", (req, res) => {
-  res.json(users);
 });
+
+//edition of the current url
+//if user is not logged in, redirect to error page
+//if user doesn't own the short url, redirect to error page
+
+
+app.post("/urls/:someid/delete", (req, res) => {
+  if (!req.session.user_id) {
+    res.redirect("/error");
+  } else {
+    if (users[req.session.user_id]["url"].hasOwnProperty(req.params.someid) === false){
+      res.redirect("/error");
+    } else {
+      let shorturl = req.params.someid;
+      delete users[req.session.user_id]["url"][shorturl];
+      delete urlDatabase[shorturl];
+      res.redirect("/urls");
+    }
+  }
+});
+
+//deletion of urls
+//if user is not logged in, redirect to error page
+//if user doesn't own the short url, redirect to error page
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+//redirect to the corresponding long url page
 
 
 app.listen(PORT, () => {
