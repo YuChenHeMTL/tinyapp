@@ -4,8 +4,10 @@ TinyApp is a full stack web application build with Node and Express that allows 
 
 ## Final Product
 
-!["The main page"]()
-!["The login page"]()
+!["The main page"](https://github.com/YuChenHeMTL/tinyapp/blob/master/docs/main_page.jpeg)
+!["The login page"](https://github.com/YuChenHeMTL/tinyapp/blob/master/docs/login.jpeg)
+!["Creating a new short url"](https://github.com/YuChenHeMTL/tinyapp/blob/master/docs/new_url.jpeg)
+!["Index of all user urls"](https://github.com/YuChenHeMTL/tinyapp/blob/master/docs/allurls.jpeg)
 
 ## Dependencies
 
