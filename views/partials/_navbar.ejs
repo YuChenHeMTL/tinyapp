@@ -4,15 +4,17 @@
         <li><a href="/urls/new">New URL</a></li>
         <li><a href="/urls">Your urls</a></li>
         <li style="float: right"><a href="/register">Register</a></li>
-        <% if (user_id === undefined||user_id ==="") {%>
+        <% if (user_id === undefined) {%>
         <li style="float: right"><a href="/login">Login</a></li>
         <% } else { %>
         <li style="float: right"><a href="/logout">Logout</a></li>
         <% } %>
      </ul>
     </div>
-    <%if (user_id === undefined||user_id ==="") {%>
+    <%if (user_id === undefined ) {%>
     <h4>Hello, please login to access to the URL shortener</h4>
+    <% } else if (!users.hasOwnProperty(user_id)) { %>
+    <h2 style = "text-align: center;"> Please logout first </h2>
     <% } else { %>
     <h2 style="text-align: center;">Welcome, <%= users[user_id].email %> !</h2>
     <% } %>

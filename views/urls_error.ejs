@@ -9,6 +9,8 @@
     <h1 id="startingText">Error 403 : forbidden action</>
     <% if (!user_id) {%>
     <h2 id="direction">Please <a href="/login">login</a> or <a href="/register">register</a> to continue</h2>
+    <% } else if (!users.hasOwnProperty(user_id)) { %>
+    <h2 id="direction"> Please <a href="/logout">logout</a> to continue </h2>
     <% } else {%>
     <h2 id="direction">Return to <a href="/urls">Your urls</a></h2>
     <% } %>

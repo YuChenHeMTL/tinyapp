@@ -11,25 +11,27 @@
     <h2 id="startingText">All URL</h2>
     <h2 style="text-align:center;">Want to add a URL ? <a href="/urls/new" class="url">URL shortener</a></h2>
     <table>
-    <% for (let shortones in users[user_id]["url"]) { %>
-        <tr>
-          <th>
-            <a href=<%= users[user_id]["url"][shortones] %> target="_blank" class="url"><%= shortones %></a>
-          </th>
-          <th>
-            (<%= users[user_id]["url"][shortones]%>)
-          </th>
-          <form method="GET" action=/urls/<%= shortones %>>
-          <th>
-            <button type="submit" class="btn edit" >edit</button>
-          </th>
-          </form>
-          <form method="POST" action=/urls/<%= shortones %>/delete>
+    <% if (users.hasOwnProperty(user_id)) { %>
+      <% for (let shortones in users[user_id]["url"]) { %>
+          <tr>
             <th>
-              <button type="submit" class="btn delete" >delete</button>
+              <a href=<%= users[user_id]["url"][shortones] %> target="_blank" class="url"><%= shortones %></a>
             </th>
-          </form>
-        </tr>
+            <th>
+              (<%= users[user_id]["url"][shortones]%>)
+            </th>
+            <form method="GET" action=/urls/<%= shortones %>>
+            <th>
+              <button type="submit" class="btn edit" >edit</button>
+            </th>
+            </form>
+            <form method="POST" action=/urls/<%= shortones %>/delete>
+              <th>
+                <button type="submit" class="btn delete" >delete</button>
+              </th>
+            </form>
+          </tr>
+      <% } %>
     <% } %>
     </table>
   </body>

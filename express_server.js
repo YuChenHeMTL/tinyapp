@@ -85,7 +85,7 @@ app.get("/logout", (req,res) => {
 //log out the current user and clear the session
 
 app.get("/urls", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
   let templateVars = {user_id: req.session.user_id, users:users};
@@ -121,7 +121,7 @@ app.post("/register", (req, res) => {
 // if registration succesful, give a random 6 digit string to the user_id
 
 app.get("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
   let templateVars = {user_id : req.session.user_id, users:users};
@@ -133,7 +133,7 @@ app.get("/urls/new", (req, res) => {
 //if user is not logged in, redirect to error page
 
 app.post("/urls/new", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
     if (req.body.longURL.substr(0, 4) !== "http"){
@@ -157,7 +157,7 @@ app.post("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   req.session.wrongURL = false;
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
   let templateVars = {shortURL: req.params.id , user_id: req.session.user_id, users:users};
@@ -169,7 +169,7 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls/:somekey", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
     if (users[req.session.user_id].url.hasOwnProperty(req.params.somekey) === false){
@@ -188,7 +188,7 @@ app.post("/urls/:somekey", (req, res) => {
 
 
 app.post("/urls/:someid/delete", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
     if (users[req.session.user_id]["url"].hasOwnProperty(req.params.someid) === false){
@@ -223,7 +223,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:short/stats", (req, res) => {
-  if (!req.session.user_id) {
+  if (!req.session.user_id || !users.hasOwnProperty(req.session.user_id)) {
     res.redirect("/error");
   } else {
     let miniURL = req.params.short;
