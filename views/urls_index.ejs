@@ -15,7 +15,7 @@
       <% for (let shortones in users[user_id]["url"]) { %>
           <tr>
             <th>
-              <a href=<%= users[user_id]["url"][shortones] %> target="_blank" class="url"><%= shortones %></a>
+              <a href=/u/<%= shortones %> target="_blank" class="url"><%= shortones %></a>
             </th>
             <th>
               (<%= users[user_id]["url"][shortones]%>)
@@ -28,6 +28,11 @@
             <form method="POST" action=/urls/<%= shortones %>/delete>
               <th>
                 <button type="submit" class="btn delete" >delete</button>
+              </th>
+            </form>
+            <form method="GET" action=/urls/<%= shortones%>/stats>
+              <th>
+                <button type="submit" class ="btn stats">Stats</button>
               </th>
             </form>
           </tr>
