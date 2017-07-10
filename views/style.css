@@ -98,6 +98,11 @@ button.btn.register::before {
   content: "\f007\00a0";
 }
 
+button.btn.stats::before {
+  font-family: fontAwesome;
+  content: "\f080\00a0";
+}
+
 
 h4 {
   text-align: center;
