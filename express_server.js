@@ -24,7 +24,7 @@ const users = {};
 //This is the main database to store all the information about the users
 //using this database, users can only see their own urls
 //This also avoids unauthorized deletion or modification of urls
-const url_stats = {}
+const url_stats = {};
 
 //the object where all url stats is stored
 
@@ -212,14 +212,19 @@ app.get("/u/:shortURL", (req, res) => {
   if (req.session.user_id){
     for (let i = 0; i < url_stats[miniURL].uniqueUser.length; i++){
       if (url_stats[miniURL].uniqueUser[i].id === req.session.user_id ){
-        url_stats[miniURL].uniqueUser[i].time = getDate()
+        url_stats[miniURL].uniqueUser[i].time = getDate();
+        let OriginalURL = urlDatabase[miniURL];
+        res.redirect(OriginalURL);
         return;
       }
     }
     url_stats[miniURL].uniqueUser.push({id : req.session.user_id, time : getDate()});
-    let longURL = urlDatabase[req.params.shortURL];
+    let longURL = urlDatabase[miniURL];
     res.redirect(longURL);
+    return;
   }
+  let longLink = urlDatabase[miniURL];
+  res.redirect(longLink);
 });
 
 app.get("/urls/:short/stats", (req, res) => {
