@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 var app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
 const cookieSession = require("cookie-session");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt-nodejs");
 
 
 app.use(express.static("views"));
@@ -110,7 +110,8 @@ app.post("/register", (req, res) => {
       }
     }
      let user_id = generateRandomString();
-     users[user_id] = {id: user_id,  email: req.body.email, password: bcrypt.hashSync(req.body.password, 10), url: {}};
+     var salt = bcrypt.genSaltSync(10);
+     users[user_id] = {id: user_id,  email: req.body.email, password: bcrypt.hashSync(req.body.password, salt), url: {}};
      res.redirect("/login");
    }
 });
